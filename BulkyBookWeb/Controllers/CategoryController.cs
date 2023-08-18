@@ -1,7 +1,6 @@
-﻿using BulkyBookWeb.Data;
-using BulkyBookWeb.Models;
+﻿using Bulky.DataAccess.Data;
+using Bulky.Models.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BulkyBookWeb.Controllers
 {
@@ -113,8 +112,6 @@ namespace BulkyBookWeb.Controllers
             _db.SaveChanges();
             TempData["success"] = "Category Delete Successfully";
             return RedirectToAction("Index");
-            
-            return View(obj);
         }
     }
 }

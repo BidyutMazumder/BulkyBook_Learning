@@ -1,6 +1,5 @@
-using BulkyBookWeb.Data;
+using Bulky.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace BulkyBookWeb
 {
