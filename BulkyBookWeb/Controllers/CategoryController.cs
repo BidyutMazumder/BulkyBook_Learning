@@ -1,19 +1,20 @@
 ﻿using Bulky.DataAccess.Data;
 using Bulky.Models.Models;
 using Microsoft.AspNetCore.Mvc;
+using Bulky.DataAccess.Repository.IRepository;
 
 namespace BulkyBookWeb.Controllers
 {
     public class CategoryController : Controller
-    { 
-        private readonly ApplicationDbContext _db;
-        public CategoryController(ApplicationDbContext db)
+    {
+        private readonly ICategoryRepository _categoryRipo;
+        public CategoryController(ICategoryRepository db)
         {
-                _db = db;
+            _categoryRipo = db;
         }
         public IActionResult Index()
         {
-            IEnumerable<Category> objCategoryList = _db.Categories;
+            IEnumerable<Category> objCategoryList = _categoryRipo.GetAll().ToList();
             return View(objCategoryList);
         }
         //get
@@ -31,8 +32,8 @@ namespace BulkyBookWeb.Controllers
                 ModelState.AddModelError("Name", "Display order exactly match with name");
             }
             if (ModelState.IsValid) {
-                _db.Categories.Add(obj);
-                _db.SaveChanges();
+                _categoryRipo.Add(obj);
+                _categoryRipo.Save();
                 TempData["success"] = "Category Created Successfully";
                 return RedirectToAction("Index");
             }
@@ -46,7 +47,7 @@ namespace BulkyBookWeb.Controllers
             {
                 return NotFound();
             }
-            var CategoryFromDb = _db.Categories.Find(id);
+            Category? CategoryFromDb = _categoryRipo.Get(u => u.Id == id);
             if (CategoryFromDb == null) { 
                 return NotFound();
             }
@@ -63,39 +64,40 @@ namespace BulkyBookWeb.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Update(obj);
-                _db.SaveChanges();
+                _categoryRipo.update(obj);
+                _categoryRipo.Save();
                 TempData["success"] = "Category Edit Successfully";
                 return RedirectToAction("Index");
             }
             return View(obj);
         }
-        /*public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            var obj = _db.Categories.Find(id);
-            _db.Categories.Remove(obj);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
-        }*/
+        //public IActionResult delete(int? id)
+        //{
+        //    if (id == null || id == 0)
+        //    {
+        //        return notfound();
+        //    }
+        //    var obj = _db.categories.find(id);
+        //    _db.categories.remove(obj);
+        //    _db.savechanges();
+        //    return redirecttoaction("index");
+        //}
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
             {
                 return NotFound();
             }
-            var CategoryFromDb = _db.Categories.Find(id);
+            var CategoryFromDb = _categoryRipo.Get(u=>u.Id == id);
             if (CategoryFromDb == null)
             {
                 return NotFound();
             }
             return View(CategoryFromDb);
         }
+
         //post
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
         {
@@ -103,16 +105,17 @@ namespace BulkyBookWeb.Controllers
             {
                 return NotFound();
             }
-            var obj = _db.Categories.Find(id);
+            var obj = _categoryRipo.Get(u => u.Id == id);
             if (obj == null)
             {
                 return NotFound();
             }
-            _db.Categories.Remove(obj);
-            _db.SaveChanges();
+            _categoryRipo.Remove(obj);
+            _categoryRipo.Save();
             TempData["success"] = "Category Delete Successfully";
             return RedirectToAction("Index");
         }
+        
     }
 }
 
